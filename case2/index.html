@@ -3,114 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Счётчик (Counter)</title>
+    <title>Кейс 2 — Счётчик</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        ::selection { background: rgba(124, 58, 237, 0.5); }
 
         body {
             min-height: 100vh;
+            background: #0a0e1a;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            position: relative;
         }
 
-        .container {
-            text-align: center;
+        .glow-orb { position: fixed; border-radius: 50%; filter: blur(90px); pointer-events: none; z-index: 0; }
+        .g1 { width: 400px; height: 400px; background: rgba(124,58,237,0.12); top: -100px; right: -80px; animation: gf 10s ease-in-out infinite; }
+        .g2 { width: 300px; height: 300px; background: rgba(6,182,212,0.08); bottom: -60px; left: -60px; animation: gf 14s ease-in-out infinite reverse; }
+        @keyframes gf { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-25px)} }
+
+        .back-link {
+            position: fixed; top: 20px; left: 20px;
+            display: inline-flex; align-items: center; gap: 6px;
+            color: #64748b; text-decoration: none; font-size: 0.85rem;
+            transition: color 0.3s; z-index: 10;
         }
+        .back-link:hover { color: #c084fc; }
+
+        .container { position: relative; z-index: 1; text-align: center; }
 
         h1 {
-            color: #fff;
-            margin-bottom: 30px;
-            font-size: 2rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem; font-weight: 700; margin-bottom: 30px;
+            background: linear-gradient(135deg, #c084fc, #67e8f9);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
 
         .counter-display {
-            width: 200px;
-            height: 80px;
-            margin: 0 auto 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 3rem;
-            font-weight: bold;
-            color: #333;
-            border-radius: 10px;
-            background-color: red;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.3s ease;
+            width: 220px; height: 90px;
+            margin: 0 auto 24px;
+            display: flex; justify-content: center; align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 3.5rem; font-weight: 700;
+            border-radius: 16px;
+            color: #fff;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .buttons {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin-bottom: 20px;
+        .counter-display.positive {
+            background: rgba(234, 179, 8, 0.15);
+            border: 1px solid rgba(234, 179, 8, 0.3);
+            box-shadow: 0 0 30px rgba(234, 179, 8, 0.1);
         }
+        .counter-display.negative {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            box-shadow: 0 0 30px rgba(34, 197, 94, 0.1);
+        }
+        .counter-display.zero {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.1);
+        }
+
+        .buttons { display: flex; gap: 16px; justify-content: center; margin-bottom: 24px; }
 
         button {
-            width: 80px;
-            height: 80px;
-            font-size: 2rem;
-            font-weight: bold;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            background: linear-gradient(135deg, #43e97b, #38f9d7);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            transition: opacity 0.3s ease, transform 0.1s ease;
+            width: 72px; height: 72px;
+            font-size: 2rem; font-weight: 700; color: #fff;
+            border: none; border-radius: 16px; cursor: pointer;
+            transition: all 0.2s; font-family: 'Space Grotesk', sans-serif;
         }
+        button:hover:not(:disabled) { transform: translateY(-2px); }
+        button:active:not(:disabled) { transform: scale(0.95); }
+        button:disabled { opacity: 0.25; cursor: not-allowed; }
 
-        button:hover:not(:disabled) {
-            transform: scale(1.05);
+        #btn-plus {
+            background: linear-gradient(135deg, #1a3a2a, #164028);
+            border: 1px solid rgba(74,222,128,0.2); color: #4ade80;
+            box-shadow: 0 4px 20px rgba(74,222,128,0.1);
         }
-
-        button:active:not(:disabled) {
-            transform: scale(0.95);
-        }
-
-        button:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
+        #btn-plus:hover:not(:disabled) { box-shadow: 0 4px 30px rgba(74,222,128,0.2); border-color: rgba(74,222,128,0.4); }
 
         #btn-minus {
-            background: linear-gradient(135deg, #f5576c, #ff6a88);
+            background: linear-gradient(135deg, #3a1a1a, #401616);
+            border: 1px solid rgba(248,113,113,0.2); color: #f87171;
+            box-shadow: 0 4px 20px rgba(248,113,113,0.1);
         }
+        #btn-minus:hover:not(:disabled) { box-shadow: 0 4px 30px rgba(248,113,113,0.2); border-color: rgba(248,113,113,0.4); }
 
         .message-box {
-            width: 320px;
-            min-height: 50px;
-            margin: 0 auto;
-            padding: 15px;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.15);
-            color: #fff;
-            font-size: 1.1rem;
-            font-weight: 600;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(5px);
-            visibility: hidden;
+            width: 300px; min-height: 48px; margin: 0 auto; padding: 14px;
+            border-radius: 12px;
+            background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.2);
+            color: #c084fc; font-size: 0.9rem; font-weight: 600;
+            display: flex; justify-content: center; align-items: center;
+            backdrop-filter: blur(10px);
+            visibility: hidden; opacity: 0; transition: all 0.3s;
         }
-
-        .message-box.visible {
-            visibility: visible;
-        }
+        .message-box.visible { visibility: visible; opacity: 1; }
     </style>
 </head>
 <body>
+    <div class="glow-orb g1"></div>
+    <div class="glow-orb g2"></div>
+
+    <a href="../index.html" class="back-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        Назад
+    </a>
+
     <div class="container">
         <h1>Счётчик</h1>
-        <div class="counter-display" id="result">0</div>
+        <div class="counter-display zero" id="result">0</div>
         <div class="buttons">
             <button id="btn-minus">−</button>
             <button id="btn-plus">+</button>
@@ -127,21 +136,14 @@
 
         function updateDisplay() {
             result.textContent = count;
+            result.classList.remove('positive', 'negative', 'zero');
+            if (count > 0) result.classList.add('positive');
+            else if (count < 0) result.classList.add('negative');
+            else result.classList.add('zero');
 
-            // Цвет фона: положительные — жёлтый, отрицательные — зелёный, ноль — красный
-            if (count > 0) {
-                result.style.backgroundColor = 'yellow';
-            } else if (count < 0) {
-                result.style.backgroundColor = 'green';
-            } else {
-                result.style.backgroundColor = 'red';
-            }
-
-            // Блокировка кнопок при достижении ±10
             btnPlus.disabled = count >= 10;
             btnMinus.disabled = count <= -10;
 
-            // Сообщение при экстремальных значениях
             if (count >= 10 || count <= -10) {
                 message.textContent = 'Вы достигли экстремального значения!';
                 message.classList.add('visible');
@@ -151,17 +153,8 @@
             }
         }
 
-        btnPlus.addEventListener('click', function () {
-            count++;
-            updateDisplay();
-        });
-
-        btnMinus.addEventListener('click', function () {
-            count--;
-            updateDisplay();
-        });
-
-        // Начальная инициализация
+        btnPlus.addEventListener('click', function () { count++; updateDisplay(); });
+        btnMinus.addEventListener('click', function () { count--; updateDisplay(); });
         updateDisplay();
     </script>
 </body>

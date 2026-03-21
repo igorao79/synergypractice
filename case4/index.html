@@ -3,179 +3,317 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Интерактивный калькулятор</title>
+    <title>Кейс 4 — Калькулятор</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        ::selection { background: rgba(124, 58, 237, 0.5); }
 
         body {
             min-height: 100vh;
+            background: #0a0e1a;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(135deg, #2c3e50, #3498db);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
+            overflow: hidden;
         }
 
-        .calculator {
-            background: #fff;
-            padding: 35px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-            width: 380px;
+        .glow-orb {
+            position: fixed; border-radius: 50%; filter: blur(90px);
+            pointer-events: none; z-index: 0;
+        }
+        .g1 { width: 400px; height: 400px; background: rgba(124,58,237,0.12); top: -100px; right: -80px; animation: gf 10s ease-in-out infinite; }
+        .g2 { width: 300px; height: 300px; background: rgba(6,182,212,0.08); bottom: -60px; left: -60px; animation: gf 14s ease-in-out infinite reverse; }
+        @keyframes gf { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-25px)} }
+
+        .page { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; }
+
+        .back-link {
+            position: fixed; top: 20px; left: 20px;
+            display: inline-flex; align-items: center; gap: 6px;
+            color: #64748b; text-decoration: none; font-size: 0.85rem;
+            transition: color 0.3s; z-index: 10;
+        }
+        .back-link:hover { color: #c084fc; }
+
+        /* === CALCULATOR BODY === */
+        .calc-body {
+            width: 340px;
+            background: linear-gradient(165deg, #1a1f35 0%, #141828 50%, #0f1220 100%);
+            border-radius: 28px;
+            padding: 28px 22px 22px;
+            box-shadow:
+                0 30px 80px rgba(0,0,0,0.5),
+                0 0 0 1px rgba(255,255,255,0.04),
+                inset 0 1px 0 rgba(255,255,255,0.06),
+                0 0 60px rgba(124,58,237,0.08);
+            position: relative;
+        }
+
+        /* Top notch / brand */
+        .calc-brand {
             text-align: center;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #475569;
+            margin-bottom: 16px;
         }
 
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 25px;
-            font-size: 1.6rem;
-        }
-
-        .inputs {
-            display: flex;
-            gap: 15px;
+        /* === DISPLAY === */
+        .display {
+            background: linear-gradient(135deg, #0c1a2a 0%, #0a1520 100%);
+            border-radius: 14px;
+            padding: 16px 18px;
             margin-bottom: 20px;
+            border: 1px solid rgba(51,65,85,0.2);
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.4);
         }
 
-        input[type="text"] {
+        .display-label {
+            font-size: 0.65rem;
+            color: #475569;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .display-inputs {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .display-inputs input {
             flex: 1;
-            padding: 12px;
-            border: 2px solid #bdc3c7;
+            background: transparent;
+            border: 1px solid rgba(51,65,85,0.3);
             border-radius: 8px;
-            font-size: 1.1rem;
-            text-align: center;
+            padding: 10px;
+            color: #e2e8f0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.2rem;
+            text-align: right;
             outline: none;
             transition: border-color 0.3s;
         }
+        .display-inputs input:focus { border-color: rgba(124,58,237,0.5); }
+        .display-inputs input::placeholder { color: #334155; }
 
-        input[type="text"]:focus {
-            border-color: #3498db;
+        .display-op {
+            font-family: 'JetBrains Mono', monospace;
+            color: #7c3aed;
+            font-size: 1.1rem;
+            font-weight: 700;
+            min-width: 20px;
+            text-align: center;
         }
 
-        .buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        button {
-            padding: 12px;
-            font-size: 1rem;
-            font-weight: 600;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: transform 0.15s, opacity 0.15s;
-        }
-
-        button:hover {
-            transform: scale(1.03);
-        }
-
-        button:active {
-            transform: scale(0.97);
-        }
-
-        .btn-sum {
-            background: linear-gradient(135deg, #27ae60, #2ecc71);
-        }
-
-        .btn-diff {
-            background: linear-gradient(135deg, #e67e22, #f39c12);
-        }
-
-        .btn-mult {
-            background: linear-gradient(135deg, #2980b9, #3498db);
-        }
-
-        .btn-div {
-            background: linear-gradient(135deg, #8e44ad, #9b59b6);
-        }
-
-        .result-box {
-            padding: 15px;
-            border-radius: 10px;
-            background: #ecf0f1;
-            min-height: 55px;
+        .display-result {
+            border-top: 1px solid rgba(51,65,85,0.2);
+            padding-top: 10px;
+            text-align: right;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: #22d3ee;
+            min-height: 40px;
             display: flex;
-            justify-content: center;
             align-items: center;
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #2c3e50;
-            transition: background-color 0.3s;
+            justify-content: flex-end;
+            transition: color 0.3s;
+        }
+        .display-result.error { color: #f87171; font-size: 0.95rem; }
+
+        /* === BUTTON GRID === */
+        .btn-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
         }
 
-        .result-box.error {
-            background: #fadbd8;
-            color: #c0392b;
+        .calc-btn {
+            height: 52px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.3px;
+        }
+
+        .calc-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .calc-btn:active { transform: scale(0.94); }
+
+        /* Number-like operation buttons */
+        .calc-btn.op-sum {
+            background: linear-gradient(135deg, #1a3a2a, #164028);
+            color: #4ade80;
+            border: 1px solid rgba(74,222,128,0.15);
+            grid-column: span 2;
+        }
+        .calc-btn.op-sum:hover { box-shadow: 0 0 20px rgba(74,222,128,0.15); border-color: rgba(74,222,128,0.3); }
+
+        .calc-btn.op-diff {
+            background: linear-gradient(135deg, #3a2a1a, #402e16);
+            color: #fbbf24;
+            border: 1px solid rgba(251,191,36,0.15);
+            grid-column: span 2;
+        }
+        .calc-btn.op-diff:hover { box-shadow: 0 0 20px rgba(251,191,36,0.15); border-color: rgba(251,191,36,0.3); }
+
+        .calc-btn.op-mult {
+            background: linear-gradient(135deg, #1a2a3a, #162840);
+            color: #60a5fa;
+            border: 1px solid rgba(96,165,250,0.15);
+            grid-column: span 2;
+        }
+        .calc-btn.op-mult:hover { box-shadow: 0 0 20px rgba(96,165,250,0.15); border-color: rgba(96,165,250,0.3); }
+
+        .calc-btn.op-div {
+            background: linear-gradient(135deg, #2a1a3a, #301640);
+            color: #c084fc;
+            border: 1px solid rgba(192,132,252,0.15);
+            grid-column: span 2;
+        }
+        .calc-btn.op-div:hover { box-shadow: 0 0 20px rgba(192,132,252,0.15); border-color: rgba(192,132,252,0.3); }
+
+        .calc-btn.op-clear {
+            background: linear-gradient(135deg, #2a1520, #351525);
+            color: #f87171;
+            border: 1px solid rgba(248,113,113,0.15);
+            grid-column: span 4;
+            height: 44px;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+        }
+        .calc-btn.op-clear:hover { box-shadow: 0 0 20px rgba(248,113,113,0.1); border-color: rgba(248,113,113,0.3); }
+
+        /* Solar panel decoration */
+        .solar {
+            display: flex;
+            gap: 3px;
+            justify-content: center;
+            margin-bottom: 18px;
+        }
+        .solar-cell {
+            width: 28px; height: 8px;
+            background: linear-gradient(180deg, #1a2540 0%, #0f1a30 100%);
+            border-radius: 2px;
+            border: 1px solid rgba(51,65,85,0.15);
+        }
+
+        @media (max-width: 400px) {
+            .calc-body { width: 95vw; padding: 20px 16px 16px; }
         }
     </style>
 </head>
 <body>
-    <div class="calculator">
-        <h1>Калькулятор</h1>
-        <div class="inputs">
-            <input type="text" id="num1" placeholder="Число 1">
-            <input type="text" id="num2" placeholder="Число 2">
+    <div class="glow-orb g1"></div>
+    <div class="glow-orb g2"></div>
+
+    <a href="../index.html" class="back-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        Назад
+    </a>
+
+    <div class="page">
+        <div class="calc-body">
+            <div class="calc-brand">Synergy Calc</div>
+            <div class="solar">
+                <div class="solar-cell"></div>
+                <div class="solar-cell"></div>
+                <div class="solar-cell"></div>
+                <div class="solar-cell"></div>
+                <div class="solar-cell"></div>
+                <div class="solar-cell"></div>
+                <div class="solar-cell"></div>
+                <div class="solar-cell"></div>
+            </div>
+
+            <div class="display">
+                <div class="display-label">INPUT</div>
+                <div class="display-inputs">
+                    <input type="text" id="num1" placeholder="0" inputmode="decimal">
+                    <span class="display-op" id="opSymbol"></span>
+                    <input type="text" id="num2" placeholder="0" inputmode="decimal">
+                </div>
+                <div class="display-result" id="result">0</div>
+            </div>
+
+            <div class="btn-grid">
+                <button class="calc-btn op-sum" onclick="calc('sum')">Сумма</button>
+                <button class="calc-btn op-diff" onclick="calc('diff')">Разность</button>
+                <button class="calc-btn op-mult" onclick="calc('mult')">Произведение</button>
+                <button class="calc-btn op-div" onclick="calc('div')">Деление</button>
+                <button class="calc-btn op-clear" onclick="clearAll()">ОЧИСТИТЬ</button>
+            </div>
         </div>
-        <div class="buttons">
-            <button class="btn-sum" onclick="calculate('sum')">Сумма</button>
-            <button class="btn-diff" onclick="calculate('diff')">Разность</button>
-            <button class="btn-mult" onclick="calculate('mult')">Произведение</button>
-            <button class="btn-div" onclick="calculate('div')">Деление</button>
-        </div>
-        <div class="result-box" id="result">Результат</div>
     </div>
 
     <script>
-        function calculate(operation) {
-            const input1 = document.getElementById('num1').value;
-            const input2 = document.getElementById('num2').value;
-            const resultBox = document.getElementById('result');
+        const symbols = { sum: '+', diff: '−', mult: '×', div: '÷' };
 
-            const num1 = parseFloat(input1);
-            const num2 = parseFloat(input2);
+        function calc(op) {
+            const i1 = document.getElementById('num1').value;
+            const i2 = document.getElementById('num2').value;
+            const res = document.getElementById('result');
+            const opSym = document.getElementById('opSymbol');
 
-            // Проверка на корректность ввода
-            if (isNaN(num1) || isNaN(num2) || input1.trim() === '' || input2.trim() === '') {
-                resultBox.textContent = 'Ошибка: введите числа!';
-                resultBox.classList.add('error');
+            opSym.textContent = symbols[op] || '';
+
+            const n1 = parseFloat(i1);
+            const n2 = parseFloat(i2);
+
+            if (isNaN(n1) || isNaN(n2) || i1.trim() === '' || i2.trim() === '') {
+                res.textContent = 'Ошибка: введите числа';
+                res.classList.add('error');
                 return;
             }
 
-            resultBox.classList.remove('error');
-            let result;
-
-            switch (operation) {
-                case 'sum':
-                    result = num1 + num2;
-                    break;
-                case 'diff':
-                    result = num1 - num2;
-                    break;
-                case 'mult':
-                    result = num1 * num2;
-                    break;
+            res.classList.remove('error');
+            let r;
+            switch (op) {
+                case 'sum':  r = n1 + n2; break;
+                case 'diff': r = n1 - n2; break;
+                case 'mult': r = n1 * n2; break;
                 case 'div':
-                    if (num2 === 0) {
-                        resultBox.textContent = 'Ошибка: деление на ноль!';
-                        resultBox.classList.add('error');
+                    if (n2 === 0) {
+                        res.textContent = 'Ошибка: деление на 0';
+                        res.classList.add('error');
                         return;
                     }
-                    result = num1 / num2;
+                    r = n1 / n2;
                     break;
             }
+            r = Math.round(r * 1000000) / 1000000;
+            res.textContent = r;
+        }
 
-            // Округляем до 6 знаков для удобства
-            result = Math.round(result * 1000000) / 1000000;
-            resultBox.textContent = result;
+        function clearAll() {
+            document.getElementById('num1').value = '';
+            document.getElementById('num2').value = '';
+            document.getElementById('result').textContent = '0';
+            document.getElementById('result').classList.remove('error');
+            document.getElementById('opSymbol').textContent = '';
         }
     </script>
 </body>
