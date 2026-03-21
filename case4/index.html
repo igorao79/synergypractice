@@ -17,19 +17,13 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            position: relative;
             overflow: hidden;
         }
 
-        .glow-orb {
-            position: fixed; border-radius: 50%; filter: blur(90px);
-            pointer-events: none; z-index: 0;
-        }
+        .glow-orb { position: fixed; border-radius: 50%; filter: blur(90px); pointer-events: none; z-index: 0; }
         .g1 { width: 400px; height: 400px; background: rgba(124,58,237,0.12); top: -100px; right: -80px; animation: gf 10s ease-in-out infinite; }
         .g2 { width: 300px; height: 300px; background: rgba(6,182,212,0.08); bottom: -60px; left: -60px; animation: gf 14s ease-in-out infinite reverse; }
         @keyframes gf { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-25px)} }
-
-        .page { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; }
 
         .back-link {
             position: fixed; top: 20px; left: 20px;
@@ -39,43 +33,131 @@
         }
         .back-link:hover { color: #c084fc; }
 
-        /* === CALCULATOR BODY === */
-        .calc-body {
-            width: 340px;
-            background: linear-gradient(165deg, #1a1f35 0%, #141828 50%, #0f1220 100%);
-            border-radius: 28px;
-            padding: 28px 22px 22px;
-            box-shadow:
-                0 30px 80px rgba(0,0,0,0.5),
-                0 0 0 1px rgba(255,255,255,0.04),
-                inset 0 1px 0 rgba(255,255,255,0.06),
-                0 0 60px rgba(124,58,237,0.08);
-            position: relative;
+        .calc {
+            position: relative; z-index: 1;
+            width: 320px;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(51,65,85,0.25);
+            border-radius: 24px;
+            padding: 28px 24px 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 60px rgba(124,58,237,0.06);
         }
 
-        /* Top notch / brand */
-        .calc-brand {
-            text-align: center;
+        .calc-title {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.65rem;
-            font-weight: 600;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: #475569;
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #c084fc, #67e8f9);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+
+        .inputs {
+            display: flex;
+            gap: 12px;
             margin-bottom: 16px;
         }
 
-        /* === DISPLAY === */
-        .display {
-            background: linear-gradient(135deg, #0c1a2a 0%, #0a1520 100%);
-            border-radius: 14px;
-            padding: 16px 18px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(51,65,85,0.2);
-            box-shadow: inset 0 2px 8px rgba(0,0,0,0.4);
+        .input-group {
+            flex: 1;
+            min-width: 0;
         }
 
-        .display-label {
+        .input-group label {
+            display: block;
+            font-size: 0.7rem;
+            color: #64748b;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 10px;
+            background: rgba(10, 15, 30, 0.6);
+            border: 1px solid rgba(51,65,85,0.3);
+            border-radius: 10px;
+            color: #e2e8f0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.15rem;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .input-group input:focus {
+            border-color: rgba(124,58,237,0.5);
+            box-shadow: 0 0 15px rgba(124,58,237,0.1);
+        }
+        .input-group input::placeholder { color: #334155; }
+
+        .op-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .op-btn {
+            padding: 14px 0;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .op-btn:active { transform: scale(0.95); }
+
+        .op-btn.sum {
+            background: rgba(34,197,94,0.12);
+            color: #4ade80;
+            border: 1px solid rgba(74,222,128,0.15);
+        }
+        .op-btn.sum:hover { background: rgba(34,197,94,0.2); box-shadow: 0 0 20px rgba(74,222,128,0.12); }
+
+        .op-btn.diff {
+            background: rgba(234,179,8,0.12);
+            color: #fbbf24;
+            border: 1px solid rgba(251,191,36,0.15);
+        }
+        .op-btn.diff:hover { background: rgba(234,179,8,0.2); box-shadow: 0 0 20px rgba(251,191,36,0.12); }
+
+        .op-btn.mult {
+            background: rgba(59,130,246,0.12);
+            color: #60a5fa;
+            border: 1px solid rgba(96,165,250,0.15);
+        }
+        .op-btn.mult:hover { background: rgba(59,130,246,0.2); box-shadow: 0 0 20px rgba(96,165,250,0.12); }
+
+        .op-btn.div {
+            background: rgba(168,85,247,0.12);
+            color: #c084fc;
+            border: 1px solid rgba(192,132,252,0.15);
+        }
+        .op-btn.div:hover { background: rgba(168,85,247,0.2); box-shadow: 0 0 20px rgba(192,132,252,0.12); }
+
+        .op-sym {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .result-area {
+            background: rgba(10, 15, 30, 0.6);
+            border: 1px solid rgba(51,65,85,0.2);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+        }
+
+        .result-label {
             font-size: 0.65rem;
             color: #475569;
             font-weight: 500;
@@ -83,150 +165,37 @@
             margin-bottom: 4px;
         }
 
-        .display-inputs {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-            margin-bottom: 10px;
-            overflow: hidden;
-        }
-
-        .display-inputs input {
-            flex: 1;
-            min-width: 0;
-            width: 100%;
-            background: transparent;
-            border: 1px solid rgba(51,65,85,0.3);
-            border-radius: 8px;
-            padding: 10px 8px;
-            color: #e2e8f0;
+        .result-value {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 1.1rem;
-            text-align: right;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-        .display-inputs input:focus { border-color: rgba(124,58,237,0.5); }
-        .display-inputs input::placeholder { color: #334155; }
-
-        .display-op {
-            font-family: 'JetBrains Mono', monospace;
-            color: #7c3aed;
-            font-size: 1.1rem;
-            font-weight: 700;
-            min-width: 20px;
-            text-align: center;
-        }
-
-        .display-result {
-            border-top: 1px solid rgba(51,65,85,0.2);
-            padding-top: 10px;
-            text-align: right;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             font-weight: 500;
             color: #22d3ee;
-            min-height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
+            text-align: right;
+            min-height: 36px;
             transition: color 0.3s;
+            word-break: break-all;
         }
-        .display-result.error { color: #f87171; font-size: 0.95rem; }
-
-        /* === BUTTON GRID === */
-        .btn-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-        }
-
-        .calc-btn {
-            height: 52px;
-            border: none;
-            border-radius: 12px;
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.82rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.15s;
-            position: relative;
-            overflow: hidden;
-            letter-spacing: 0.3px;
-        }
-
-        .calc-btn::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 12px;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        .calc-btn:active { transform: scale(0.94); }
-
-        /* Number-like operation buttons */
-        .calc-btn.op-sum {
-            background: linear-gradient(135deg, #1a3a2a, #164028);
-            color: #4ade80;
-            border: 1px solid rgba(74,222,128,0.15);
-            grid-column: span 2;
-        }
-        .calc-btn.op-sum:hover { box-shadow: 0 0 20px rgba(74,222,128,0.15); border-color: rgba(74,222,128,0.3); }
-
-        .calc-btn.op-diff {
-            background: linear-gradient(135deg, #3a2a1a, #402e16);
-            color: #fbbf24;
-            border: 1px solid rgba(251,191,36,0.15);
-            grid-column: span 2;
-        }
-        .calc-btn.op-diff:hover { box-shadow: 0 0 20px rgba(251,191,36,0.15); border-color: rgba(251,191,36,0.3); }
-
-        .calc-btn.op-mult {
-            background: linear-gradient(135deg, #1a2a3a, #162840);
-            color: #60a5fa;
-            border: 1px solid rgba(96,165,250,0.15);
-            grid-column: span 2;
-        }
-        .calc-btn.op-mult:hover { box-shadow: 0 0 20px rgba(96,165,250,0.15); border-color: rgba(96,165,250,0.3); }
-
-        .calc-btn.op-div {
-            background: linear-gradient(135deg, #2a1a3a, #301640);
-            color: #c084fc;
-            border: 1px solid rgba(192,132,252,0.15);
-            grid-column: span 2;
-        }
-        .calc-btn.op-div:hover { box-shadow: 0 0 20px rgba(192,132,252,0.15); border-color: rgba(192,132,252,0.3); }
-
-        .calc-btn.op-clear {
-            background: linear-gradient(135deg, #2a1520, #351525);
+        .result-value.error {
             color: #f87171;
+            font-size: 0.9rem;
+        }
+
+        .clear-btn {
+            width: 100%;
+            padding: 10px;
             border: 1px solid rgba(248,113,113,0.15);
-            grid-column: span 4;
-            height: 44px;
+            border-radius: 10px;
+            background: rgba(248,113,113,0.08);
+            color: #f87171;
+            font-family: 'Space Grotesk', sans-serif;
             font-size: 0.75rem;
-            letter-spacing: 1px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            transition: all 0.2s;
         }
-        .calc-btn.op-clear:hover { box-shadow: 0 0 20px rgba(248,113,113,0.1); border-color: rgba(248,113,113,0.3); }
-
-        /* Solar panel decoration */
-        .solar {
-            display: flex;
-            gap: 3px;
-            justify-content: center;
-            margin-bottom: 18px;
-        }
-        .solar-cell {
-            width: 28px; height: 8px;
-            background: linear-gradient(180deg, #1a2540 0%, #0f1a30 100%);
-            border-radius: 2px;
-            border: 1px solid rgba(51,65,85,0.15);
-        }
-
-        @media (max-width: 400px) {
-            .calc-body { width: 95vw; padding: 20px 16px 16px; }
-        }
+        .clear-btn:hover { background: rgba(248,113,113,0.15); box-shadow: 0 0 15px rgba(248,113,113,0.08); }
+        .clear-btn:active { transform: scale(0.97); }
     </style>
 </head>
 <body>
@@ -238,56 +207,46 @@
         Назад
     </a>
 
-    <div class="page">
-        <div class="calc-body">
-            <div class="calc-brand">Synergy Calc</div>
-            <div class="solar">
-                <div class="solar-cell"></div>
-                <div class="solar-cell"></div>
-                <div class="solar-cell"></div>
-                <div class="solar-cell"></div>
-                <div class="solar-cell"></div>
-                <div class="solar-cell"></div>
-                <div class="solar-cell"></div>
-                <div class="solar-cell"></div>
-            </div>
+    <div class="calc">
+        <div class="calc-title">Калькулятор</div>
 
-            <div class="display">
-                <div class="display-label">INPUT</div>
-                <div class="display-inputs">
-                    <input type="text" id="num1" placeholder="0" inputmode="decimal">
-                    <span class="display-op" id="opSymbol"></span>
-                    <input type="text" id="num2" placeholder="0" inputmode="decimal">
-                </div>
-                <div class="display-result" id="result">0</div>
+        <div class="inputs">
+            <div class="input-group">
+                <label>Число 1</label>
+                <input type="text" id="num1" placeholder="0" inputmode="decimal">
             </div>
-
-            <div class="btn-grid">
-                <button class="calc-btn op-sum" onclick="calc('sum')">Сумма</button>
-                <button class="calc-btn op-diff" onclick="calc('diff')">Разность</button>
-                <button class="calc-btn op-mult" onclick="calc('mult')">Произведение</button>
-                <button class="calc-btn op-div" onclick="calc('div')">Деление</button>
-                <button class="calc-btn op-clear" onclick="clearAll()">ОЧИСТИТЬ</button>
+            <div class="input-group">
+                <label>Число 2</label>
+                <input type="text" id="num2" placeholder="0" inputmode="decimal">
             </div>
         </div>
+
+        <div class="op-grid">
+            <button class="op-btn sum" onclick="calc('sum')"><span class="op-sym">+</span> Сумма</button>
+            <button class="op-btn diff" onclick="calc('diff')"><span class="op-sym">−</span> Разность</button>
+            <button class="op-btn mult" onclick="calc('mult')"><span class="op-sym">×</span> Произведение</button>
+            <button class="op-btn div" onclick="calc('div')"><span class="op-sym">÷</span> Деление</button>
+        </div>
+
+        <div class="result-area">
+            <div class="result-label">РЕЗУЛЬТАТ</div>
+            <div class="result-value" id="result">0</div>
+        </div>
+
+        <button class="clear-btn" onclick="clearAll()">ОЧИСТИТЬ</button>
     </div>
 
     <script>
-        const symbols = { sum: '+', diff: '−', mult: '×', div: '÷' };
-
         function calc(op) {
             const i1 = document.getElementById('num1').value;
             const i2 = document.getElementById('num2').value;
             const res = document.getElementById('result');
-            const opSym = document.getElementById('opSymbol');
-
-            opSym.textContent = symbols[op] || '';
 
             const n1 = parseFloat(i1);
             const n2 = parseFloat(i2);
 
             if (isNaN(n1) || isNaN(n2) || i1.trim() === '' || i2.trim() === '') {
-                res.textContent = 'Ошибка: введите числа';
+                res.textContent = 'Ошибка: введите числа!';
                 res.classList.add('error');
                 return;
             }
@@ -300,7 +259,7 @@
                 case 'mult': r = n1 * n2; break;
                 case 'div':
                     if (n2 === 0) {
-                        res.textContent = 'Ошибка: деление на 0';
+                        res.textContent = 'Ошибка: деление на ноль!';
                         res.classList.add('error');
                         return;
                     }
@@ -316,7 +275,6 @@
             document.getElementById('num2').value = '';
             document.getElementById('result').textContent = '0';
             document.getElementById('result').classList.remove('error');
-            document.getElementById('opSymbol').textContent = '';
         }
     </script>
 </body>

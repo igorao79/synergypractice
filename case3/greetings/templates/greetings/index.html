@@ -3,121 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Приветствие</title>
+    <title>Кейс 3 — Приветствие</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        ::selection { background: rgba(124, 58, 237, 0.5); }
 
         body {
             min-height: 100vh;
+            background: #0a0e1a;
+            color: #fff;
+            font-family: 'Inter', -apple-system, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(135deg, #74b9ff, #a29bfe);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            position: relative;
         }
 
-        .container {
-            background: #fff;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            width: 400px;
+        .glow-orb { position: fixed; border-radius: 50%; filter: blur(90px); pointer-events: none; z-index: 0; }
+        .g1 { width: 400px; height: 400px; background: rgba(124,58,237,0.12); top: -100px; right: -80px; animation: gf 10s ease-in-out infinite; }
+        .g2 { width: 300px; height: 300px; background: rgba(6,182,212,0.08); bottom: -60px; left: -60px; animation: gf 14s ease-in-out infinite reverse; }
+        @keyframes gf { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-25px)} }
+
+        .back-link {
+            position: fixed; top: 20px; left: 20px;
+            display: inline-flex; align-items: center; gap: 6px;
+            color: #64748b; text-decoration: none; font-size: 0.85rem;
+            transition: color 0.3s; z-index: 10;
+        }
+        .back-link:hover { color: #c084fc; }
+
+        .card {
+            position: relative; z-index: 1;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(51,65,85,0.25);
+            padding: 36px;
+            border-radius: 20px;
+            width: 420px;
+            max-width: 95vw;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 60px rgba(124,58,237,0.06);
             text-align: center;
         }
 
         h1 {
-            color: #2d3436;
-            margin-bottom: 25px;
-            font-size: 1.8rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #c084fc, #67e8f9);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
 
         .greeting-message {
-            background: #00b894;
-            color: #fff;
-            padding: 15px;
-            border-radius: 10px;
+            background: rgba(34,197,94,0.12);
+            border: 1px solid rgba(74,222,128,0.2);
+            color: #4ade80;
+            padding: 14px;
+            border-radius: 12px;
             margin-bottom: 20px;
-            font-size: 1.2rem;
+            font-size: 1.05rem;
+            font-weight: 500;
             animation: fadeIn 0.5s ease;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
+            from { opacity: 0; transform: translateY(-8px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        form {
-            margin-bottom: 25px;
-        }
+        form { margin-bottom: 24px; }
 
         .form-input {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #dfe6e9;
-            border-radius: 8px;
+            padding: 12px 14px;
+            background: rgba(10, 15, 30, 0.6);
+            border: 1px solid rgba(51,65,85,0.3);
+            border-radius: 10px;
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
             font-size: 1rem;
             outline: none;
-            transition: border-color 0.3s;
+            transition: border-color 0.3s, box-shadow 0.3s;
             margin-bottom: 10px;
         }
-
         .form-input:focus {
-            border-color: #6c5ce7;
+            border-color: rgba(124,58,237,0.5);
+            box-shadow: 0 0 15px rgba(124,58,237,0.1);
         }
+        .form-input::placeholder { color: #475569; }
 
         .error {
-            color: #d63031;
-            font-size: 0.9rem;
+            color: #f87171;
+            font-size: 0.85rem;
             margin-bottom: 10px;
             text-align: left;
         }
 
-        button {
+        button[type="submit"] {
             width: 100%;
             padding: 12px;
-            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
-            color: #fff;
             border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
+            border-radius: 12px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(135deg, #7c3aed, #06b6d4);
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s;
+        }
+        button[type="submit"]:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 30px rgba(124,58,237,0.25);
         }
 
-        button:hover {
-            transform: scale(1.02);
-        }
-
-        .names-list {
-            text-align: left;
-        }
-
+        .names-list { text-align: left; margin-top: 20px; }
         .names-list h3 {
-            color: #636e72;
+            color: #64748b;
             margin-bottom: 10px;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
+            font-weight: 500;
         }
-
-        .names-list ul {
-            list-style: none;
-            padding: 0;
-        }
-
+        .names-list ul { list-style: none; padding: 0; }
         .names-list li {
             padding: 8px 12px;
-            background: #f8f9fa;
-            border-radius: 6px;
+            background: rgba(30,41,59,0.4);
+            border: 1px solid rgba(51,65,85,0.15);
+            border-radius: 8px;
             margin-bottom: 5px;
-            color: #2d3436;
+            color: #94a3b8;
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="glow-orb g1"></div>
+    <div class="glow-orb g2"></div>
+
+    <a href="https://igorao79.github.io/synergypractice/index.html" class="back-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        Назад
+    </a>
+
+    <div class="card">
         <h1>Приветствие</h1>
 
         {% if greeting %}

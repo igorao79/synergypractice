@@ -69,6 +69,16 @@
             border: 1px solid rgba(239, 68, 68, 0.3);
             box-shadow: 0 0 30px rgba(239, 68, 68, 0.1);
         }
+        .counter-display.extreme {
+            background: rgba(239, 68, 68, 0.25);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            box-shadow: 0 0 40px rgba(239, 68, 68, 0.2);
+            animation: pulse-extreme 1s ease-in-out infinite;
+        }
+        @keyframes pulse-extreme {
+            0%, 100% { box-shadow: 0 0 40px rgba(239, 68, 68, 0.2); }
+            50% { box-shadow: 0 0 60px rgba(239, 68, 68, 0.35); }
+        }
 
         .buttons { display: flex; gap: 16px; justify-content: center; margin-bottom: 24px; }
 
@@ -136,8 +146,9 @@
 
         function updateDisplay() {
             result.textContent = count;
-            result.classList.remove('positive', 'negative', 'zero');
-            if (count > 0) result.classList.add('positive');
+            result.classList.remove('positive', 'negative', 'zero', 'extreme');
+            if (count >= 10 || count <= -10) result.classList.add('extreme');
+            else if (count > 0) result.classList.add('positive');
             else if (count < 0) result.classList.add('negative');
             else result.classList.add('zero');
 
