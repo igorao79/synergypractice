@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кейс 1 — Дата рождения</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        ::selection { background: rgba(124, 58, 237, 0.5); }
+
+        body {
+            min-height: 100vh;
+            background: #0f172a;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .glow-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .glow-orb-1 {
+            width: 350px; height: 350px;
+            background: rgba(124, 58, 237, 0.15);
+            top: -80px; right: -80px;
+            animation: float 8s ease-in-out infinite;
+        }
+        .glow-orb-2 {
+            width: 280px; height: 280px;
+            background: rgba(6, 182, 212, 0.1);
+            bottom: -60px; left: -60px;
+            animation: float 10s ease-in-out infinite reverse;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 480px;
+            max-width: 95vw;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+            transition: color 0.3s;
+        }
+        .back-link:hover { color: #c084fc; }
+
+        .card {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(51, 65, 85, 0.3);
+            border-radius: 20px;
+            padding: 36px;
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, #c084fc, #67e8f9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .desc {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 28px;
+        }
+
+        .form-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .input-wrap {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+            -moz-appearance: textfield;
+        }
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button { -webkit-appearance: none; }
+        input:focus { border-color: rgba(124, 58, 237, 0.5); }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(135deg, #7c3aed, #06b6d4);
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 24px;
+        }
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 30px rgba(124, 58, 237, 0.3);
+        }
+        .btn:active { transform: translateY(0); }
+
+        .results {
+            display: none;
+        }
+        .results.show { display: block; }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.2);
+        }
+        .result-item:last-of-type { border-bottom: none; }
+
+        .result-label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        .result-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #c084fc;
+        }
+
+        .result-value.leap-yes { color: #22d3ee; }
+        .result-value.leap-no { color: #f472b6; }
+
+        .stars-display {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(51, 65, 85, 0.3);
+            border-radius: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            line-height: 1.3;
+            color: #a855f7;
+            text-align: center;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        .error-msg {
+            color: #f87171;
+            font-size: 0.85rem;
+            text-align: center;
+            margin-bottom: 16px;
+            display: none;
+        }
+        .error-msg.show { display: block; }
+    </style>
+</head>
+<body>
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+
+    <div class="container">
+        <a href="../index.html" class="back-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+            Назад
+        </a>
+
+        <div class="card">
+            <h1>Дата рождения</h1>
+            <p class="desc">Введите дату рождения для анализа</p>
+
+            <div class="form-group">
+                <div class="input-wrap">
+                    <label>День</label>
+                    <input type="number" id="day" min="1" max="31" placeholder="15">
+                </div>
+                <div class="input-wrap">
+                    <label>Месяц</label>
+                    <input type="number" id="month" min="1" max="12" placeholder="06">
+                </div>
+                <div class="input-wrap">
+                    <label>Год</label>
+                    <input type="number" id="year" min="1900" max="2026" placeholder="2000">
+                </div>
+            </div>
+
+            <div class="error-msg" id="error"></div>
+            <button class="btn" onclick="calculate()">Рассчитать</button>
+
+            <div class="results" id="results">
+                <div class="result-item">
+                    <span class="result-label">День недели</span>
+                    <span class="result-value" id="r-weekday"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Високосный год</span>
+                    <span class="result-value" id="r-leap"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Возраст</span>
+                    <span class="result-value" id="r-age"></span>
+                </div>
+                <div class="stars-display" id="r-stars"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const DAYS = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
+
+        const DIGITS = {
+            '0': [' *** ','*   *','*   *','*   *',' *** '],
+            '1': ['  *  ',' **  ','  *  ','  *  ',' *** '],
+            '2': [' *** ','*   *','  ** ',' *   ','*****'],
+            '3': [' *** ','*   *','  ** ','*   *',' *** '],
+            '4': ['*   *','*   *','*****','    *','    *'],
+            '5': ['*****','*    ',' *** ','    *','**** '],
+            '6': [' *** ','*    ','**** ','*   *',' *** '],
+            '7': ['*****','    *','   * ','  *  ','  *  '],
+            '8': [' *** ','*   *',' *** ','*   *',' *** '],
+            '9': [' *** ','*   *',' ****','    *',' *** '],
+            '.': ['     ','     ','     ','     ','  *  ']
+        };
+
+        function isLeapYear(y) {
+            return (y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0);
+        }
+
+        function getAge(d, m, y) {
+            const today = new Date();
+            let age = today.getFullYear() - y;
+            if (today.getMonth() + 1 < m || (today.getMonth() + 1 === m && today.getDate() < d)) {
+                age--;
+            }
+            return age;
+        }
+
+        function dateToStars(d, m, y) {
+            const ds = String(d).padStart(2, '0');
+            const ms = String(m).padStart(2, '0');
+            const ys = String(y).padStart(4, '0');
+            const dateStr = ds + '.' + ms + '.' + ys;
+            const patterns = [];
+            for (const ch of dateStr) {
+                patterns.push(DIGITS[ch]);
+            }
+            let result = '';
+            for (let row = 0; row < 5; row++) {
+                result += patterns.map(p => p[row]).join('  ') + '\n';
+            }
+            return result;
+        }
+
+        function pluralize(n, one, few, many) {
+            const abs = Math.abs(n) % 100;
+            const last = abs % 10;
+            if (abs > 10 && abs < 20) return many;
+            if (last > 1 && last < 5) return few;
+            if (last === 1) return one;
+            return many;
+        }
+
+        function calculate() {
+            const day = parseInt(document.getElementById('day').value);
+            const month = parseInt(document.getElementById('month').value);
+            const year = parseInt(document.getElementById('year').value);
+            const errorEl = document.getElementById('error');
+            const resultsEl = document.getElementById('results');
+
+            errorEl.classList.remove('show');
+            resultsEl.classList.remove('show');
+
+            if (!day || !month || !year || day < 1 || day > 31 || month < 1 || month > 12 || year < 1900) {
+                errorEl.textContent = 'Введите корректную дату!';
+                errorEl.classList.add('show');
+                return;
+            }
+
+            const date = new Date(year, month - 1, day);
+            if (date.getDate() !== day || date.getMonth() !== month - 1 || date.getFullYear() !== year) {
+                errorEl.textContent = 'Такой даты не существует!';
+                errorEl.classList.add('show');
+                return;
+            }
+
+            if (date > new Date()) {
+                errorEl.textContent = 'Дата рождения не может быть в будущем!';
+                errorEl.classList.add('show');
+                return;
+            }
+
+            document.getElementById('r-weekday').textContent = DAYS[date.getDay()];
+
+            const leap = isLeapYear(year);
+            const leapEl = document.getElementById('r-leap');
+            leapEl.textContent = leap ? 'Да' : 'Нет';
+            leapEl.className = 'result-value ' + (leap ? 'leap-yes' : 'leap-no');
+
+            const age = getAge(day, month, year);
+            document.getElementById('r-age').textContent = age + ' ' + pluralize(age, 'год', 'года', 'лет');
+
+            document.getElementById('r-stars').textContent = dateToStars(day, month, year);
+
+            resultsEl.classList.add('show');
+        }
+
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('keydown', e => {
+                if (e.key === 'Enter') calculate();
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интерактивный калькулятор</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .calculator {
+            background: #fff;
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            width: 380px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 1.6rem;
+        }
+
+        .inputs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #3498db;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.15s, opacity 0.15s;
+        }
+
+        button:hover {
+            transform: scale(1.03);
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        .btn-sum {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        }
+
+        .btn-diff {
+            background: linear-gradient(135deg, #e67e22, #f39c12);
+        }
+
+        .btn-mult {
+            background: linear-gradient(135deg, #2980b9, #3498db);
+        }
+
+        .btn-div {
+            background: linear-gradient(135deg, #8e44ad, #9b59b6);
+        }
+
+        .result-box {
+            padding: 15px;
+            border-radius: 10px;
+            background: #ecf0f1;
+            min-height: 55px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+            transition: background-color 0.3s;
+        }
+
+        .result-box.error {
+            background: #fadbd8;
+            color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h1>Калькулятор</h1>
+        <div class="inputs">
+            <input type="text" id="num1" placeholder="Число 1">
+            <input type="text" id="num2" placeholder="Число 2">
+        </div>
+        <div class="buttons">
+            <button class="btn-sum" onclick="calculate('sum')">Сумма</button>
+            <button class="btn-diff" onclick="calculate('diff')">Разность</button>
+            <button class="btn-mult" onclick="calculate('mult')">Произведение</button>
+            <button class="btn-div" onclick="calculate('div')">Деление</button>
+        </div>
+        <div class="result-box" id="result">Результат</div>
+    </div>
+
+    <script>
+        function calculate(operation) {
+            const input1 = document.getElementById('num1').value;
+            const input2 = document.getElementById('num2').value;
+            const resultBox = document.getElementById('result');
+
+            const num1 = parseFloat(input1);
+            const num2 = parseFloat(input2);
+
+            // Проверка на корректность ввода
+            if (isNaN(num1) || isNaN(num2) || input1.trim() === '' || input2.trim() === '') {
+                resultBox.textContent = 'Ошибка: введите числа!';
+                resultBox.classList.add('error');
+                return;
+            }
+
+            resultBox.classList.remove('error');
+            let result;
+
+            switch (operation) {
+                case 'sum':
+                    result = num1 + num2;
+                    break;
+                case 'diff':
+                    result = num1 - num2;
+                    break;
+                case 'mult':
+                    result = num1 * num2;
+                    break;
+                case 'div':
+                    if (num2 === 0) {
+                        resultBox.textContent = 'Ошибка: деление на ноль!';
+                        resultBox.classList.add('error');
+                        return;
+                    }
+                    result = num1 / num2;
+                    break;
+            }
+
+            // Округляем до 6 знаков для удобства
+            result = Math.round(result * 1000000) / 1000000;
+            resultBox.textContent = result;
+        }
+    </script>
+</body>
+</html>
