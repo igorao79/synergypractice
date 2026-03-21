@@ -85,20 +85,23 @@
 
         .display-inputs {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             align-items: center;
             margin-bottom: 10px;
+            overflow: hidden;
         }
 
         .display-inputs input {
             flex: 1;
+            min-width: 0;
+            width: 100%;
             background: transparent;
             border: 1px solid rgba(51,65,85,0.3);
             border-radius: 8px;
-            padding: 10px;
+            padding: 10px 8px;
             color: #e2e8f0;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             text-align: right;
             outline: none;
             transition: border-color 0.3s;
