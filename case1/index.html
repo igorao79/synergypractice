@@ -108,7 +108,7 @@
             font-weight: 500;
         }
 
-        input[type="number"] {
+        .form-group input {
             width: 100%;
             padding: 10px 12px;
             background: rgba(15, 23, 42, 0.6);
@@ -121,9 +121,7 @@
             transition: border-color 0.3s;
             -moz-appearance: textfield;
         }
-        input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button { -webkit-appearance: none; }
-        input:focus { border-color: rgba(124, 58, 237, 0.5); }
+        .form-group input:focus { border-color: rgba(124, 58, 237, 0.5); }
 
         .btn {
             width: 100%;
@@ -230,17 +228,17 @@
             <div class="form-group">
                 <div class="input-wrap">
                     <label>День</label>
-                    <input type="number" id="day" min="1" max="31" placeholder="15">
+                    <input type="text" id="day" maxlength="2" placeholder="15" inputmode="numeric">
                     <div class="input-hint" id="hint-day"></div>
                 </div>
                 <div class="input-wrap">
                     <label>Месяц</label>
-                    <input type="number" id="month" min="1" max="12" placeholder="06">
+                    <input type="text" id="month" maxlength="2" placeholder="06" inputmode="numeric">
                     <div class="input-hint" id="hint-month"></div>
                 </div>
                 <div class="input-wrap">
                     <label>Год</label>
-                    <input type="number" id="year" min="1900" max="2026" placeholder="2000">
+                    <input type="text" id="year" maxlength="4" placeholder="2000" inputmode="numeric">
                     <div class="input-hint" id="hint-year"></div>
                 </div>
             </div>
@@ -371,36 +369,59 @@
             });
         });
 
+        // Only allow digits
+        document.querySelectorAll('.form-group input').forEach(inp => {
+            inp.addEventListener('input', () => {
+                inp.value = inp.value.replace(/[^0-9]/g, '');
+            });
+        });
+
         // Real-time validation with 2s debounce
-        const validators = {
-            day:   v => { const n = parseInt(v); return v === '' || (n >= 1 && n <= 31); },
-            month: v => { const n = parseInt(v); return v === '' || (n >= 1 && n <= 12); },
-            year:  v => { const n = parseInt(v); return v === '' || (n >= 1900 && n <= 2026); },
-        };
-        const hints = {
-            day:   '1–31',
-            month: '1–12',
-            year:  '1900–2026',
-        };
-        const timers = {};
+        let validateTimer;
+        function clearAllInvalid() {
+            ['day','month','year'].forEach(id => {
+                document.getElementById(id).classList.remove('invalid');
+                const h = document.getElementById('hint-' + id);
+                h.classList.remove('show');
+                h.textContent = '';
+            });
+        }
 
-        ['day', 'month', 'year'].forEach(id => {
-            const input = document.getElementById(id);
-            const hint = document.getElementById('hint-' + id);
+        function markInvalid(id, msg) {
+            const inp = document.getElementById(id);
+            const h = document.getElementById('hint-' + id);
+            inp.classList.add('invalid');
+            h.textContent = msg;
+            h.classList.add('show');
+        }
 
-            input.addEventListener('input', () => {
-                clearTimeout(timers[id]);
-                input.classList.remove('invalid');
-                hint.classList.remove('show');
-                hint.textContent = '';
+        function validateFields() {
+            clearAllInvalid();
+            const dv = document.getElementById('day').value;
+            const mv = document.getElementById('month').value;
+            const yv = document.getElementById('year').value;
+            if (!dv && !mv && !yv) return;
 
-                timers[id] = setTimeout(() => {
-                    if (input.value !== '' && !validators[id](input.value)) {
-                        input.classList.add('invalid');
-                        hint.textContent = hints[id];
-                        hint.classList.add('show');
-                    }
-                }, 2000);
+            const d = parseInt(dv), m = parseInt(mv), y = parseInt(yv);
+
+            if (dv && (isNaN(d) || d < 1 || d > 31)) markInvalid('day', '1–31');
+            if (mv && (isNaN(m) || m < 1 || m > 12)) markInvalid('month', '1–12');
+            if (yv && (isNaN(y) || y < 1900 || y > 2026)) markInvalid('year', '1900–2026');
+
+            // Check if full date exists
+            if (dv && mv && yv && !isNaN(d) && !isNaN(m) && !isNaN(y)) {
+                const date = new Date(y, m - 1, d);
+                if (date.getDate() !== d || date.getMonth() !== m - 1) {
+                    markInvalid('day', 'Нет такого дня');
+                }
+            }
+        }
+
+        document.querySelectorAll('.form-group input').forEach(inp => {
+            inp.addEventListener('input', () => {
+                clearTimeout(validateTimer);
+                clearAllInvalid();
+                validateTimer = setTimeout(validateFields, 2000);
             });
         });
     </script>

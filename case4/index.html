@@ -4,278 +4,262 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Кейс 4 — Калькулятор</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-        ::selection { background: rgba(124, 58, 237, 0.5); }
 
         body {
             min-height: 100vh;
             background: #0a0e1a;
-            color: #fff;
-            font-family: 'Inter', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
+            font-family: 'Inter', sans-serif;
             overflow: hidden;
         }
 
-        .glow-orb { position: fixed; border-radius: 50%; filter: blur(90px); pointer-events: none; z-index: 0; }
-        .g1 { width: 400px; height: 400px; background: rgba(124,58,237,0.12); top: -100px; right: -80px; animation: gf 10s ease-in-out infinite; }
-        .g2 { width: 300px; height: 300px; background: rgba(6,182,212,0.08); bottom: -60px; left: -60px; animation: gf 14s ease-in-out infinite reverse; }
-        @keyframes gf { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-25px)} }
+        .glow { position: fixed; border-radius: 50%; filter: blur(100px); pointer-events: none; }
+        .glow-1 { width: 400px; height: 400px; background: rgba(124,58,237,0.1); top: -100px; right: -100px; }
+        .glow-2 { width: 350px; height: 350px; background: rgba(6,182,212,0.07); bottom: -80px; left: -80px; }
 
         .back-link {
-            position: fixed; top: 20px; left: 20px;
-            display: inline-flex; align-items: center; gap: 6px;
+            position: fixed; top: 20px; left: 20px; z-index: 10;
+            display: flex; align-items: center; gap: 6px;
             color: #64748b; text-decoration: none; font-size: 0.85rem;
-            transition: color 0.3s; z-index: 10;
+            transition: color 0.3s;
         }
         .back-link:hover { color: #c084fc; }
 
-        .calc {
+        /* ===== CALCULATOR SHELL ===== */
+        .calc-shell {
             position: relative; z-index: 1;
-            width: 320px;
-            background: rgba(15, 23, 42, 0.5);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(51,65,85,0.25);
-            border-radius: 24px;
-            padding: 28px 24px 24px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 60px rgba(124,58,237,0.06);
+            width: 300px;
+            background: linear-gradient(170deg, #1e2340 0%, #171b30 40%, #111525 100%);
+            border-radius: 22px;
+            padding: 20px 18px 18px;
+            box-shadow:
+                0 25px 60px rgba(0,0,0,0.6),
+                0 0 0 1px rgba(255,255,255,0.03),
+                inset 0 1px 0 rgba(255,255,255,0.05);
         }
 
-        .calc-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.3rem;
-            font-weight: 700;
+        /* Brand */
+        .brand {
             text-align: center;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, #c084fc, #67e8f9);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-        }
-
-        .inputs {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .input-group {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 0.7rem;
-            color: #64748b;
-            margin-bottom: 4px;
-            font-weight: 500;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 12px 10px;
-            background: rgba(10, 15, 30, 0.6);
-            border: 1px solid rgba(51,65,85,0.3);
-            border-radius: 10px;
-            color: #e2e8f0;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.15rem;
-            text-align: center;
-            outline: none;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-        .input-group input:focus {
-            border-color: rgba(124,58,237,0.5);
-            box-shadow: 0 0 15px rgba(124,58,237,0.1);
-        }
-        .input-group input::placeholder { color: #334155; }
-
-        .op-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-
-        .op-btn {
-            padding: 14px 0;
-            border: none;
-            border-radius: 12px;
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.85rem;
+            font-size: 0.55rem;
             font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-        .op-btn:active { transform: scale(0.95); }
-
-        .op-btn.sum {
-            background: rgba(34,197,94,0.12);
-            color: #4ade80;
-            border: 1px solid rgba(74,222,128,0.15);
-        }
-        .op-btn.sum:hover { background: rgba(34,197,94,0.2); box-shadow: 0 0 20px rgba(74,222,128,0.12); }
-
-        .op-btn.diff {
-            background: rgba(234,179,8,0.12);
-            color: #fbbf24;
-            border: 1px solid rgba(251,191,36,0.15);
-        }
-        .op-btn.diff:hover { background: rgba(234,179,8,0.2); box-shadow: 0 0 20px rgba(251,191,36,0.12); }
-
-        .op-btn.mult {
-            background: rgba(59,130,246,0.12);
-            color: #60a5fa;
-            border: 1px solid rgba(96,165,250,0.15);
-        }
-        .op-btn.mult:hover { background: rgba(59,130,246,0.2); box-shadow: 0 0 20px rgba(96,165,250,0.12); }
-
-        .op-btn.div {
-            background: rgba(168,85,247,0.12);
-            color: #c084fc;
-            border: 1px solid rgba(192,132,252,0.15);
-        }
-        .op-btn.div:hover { background: rgba(168,85,247,0.2); box-shadow: 0 0 20px rgba(192,132,252,0.12); }
-
-        .op-sym {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1rem;
-            font-weight: 700;
-        }
-
-        .result-area {
-            background: rgba(10, 15, 30, 0.6);
-            border: 1px solid rgba(51,65,85,0.2);
-            border-radius: 12px;
-            padding: 14px 16px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #3b4060;
             margin-bottom: 12px;
         }
 
-        .result-label {
-            font-size: 0.65rem;
-            color: #475569;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
+        /* Solar strip */
+        .solar {
+            display: flex; gap: 2px; justify-content: center; margin-bottom: 14px;
+        }
+        .solar i {
+            display: block; width: 24px; height: 6px;
+            background: linear-gradient(180deg, #1a2035, #0f1525);
+            border-radius: 1px;
+            border: 1px solid rgba(30,35,55,0.8);
         }
 
-        .result-value {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.8rem;
-            font-weight: 500;
-            color: #22d3ee;
-            text-align: right;
-            min-height: 36px;
-            transition: color 0.3s;
-            word-break: break-all;
-        }
-        .result-value.error {
-            color: #f87171;
-            font-size: 0.9rem;
-        }
-
-        .clear-btn {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid rgba(248,113,113,0.15);
+        /* ===== LCD SCREEN ===== */
+        .lcd {
+            background: linear-gradient(135deg, #0b1018, #080d15);
             border-radius: 10px;
-            background: rgba(248,113,113,0.08);
-            color: #f87171;
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.75rem;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            cursor: pointer;
-            transition: all 0.2s;
+            border: 1px solid rgba(40,50,70,0.3);
+            padding: 12px 14px;
+            margin-bottom: 16px;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
         }
-        .clear-btn:hover { background: rgba(248,113,113,0.15); box-shadow: 0 0 15px rgba(248,113,113,0.08); }
-        .clear-btn:active { transform: scale(0.97); }
+
+        .lcd-row {
+            display: flex; gap: 6px; margin-bottom: 8px;
+        }
+
+        .lcd input {
+            flex: 1; min-width: 0;
+            background: rgba(15,20,35,0.5);
+            border: 1px solid rgba(40,50,70,0.25);
+            border-radius: 6px;
+            padding: 8px 6px;
+            color: #c8d0e0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            text-align: right;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .lcd input:focus { border-color: rgba(124,58,237,0.4); }
+        .lcd input::placeholder { color: #2a3050; }
+
+        .lcd-op {
+            font-family: 'JetBrains Mono', monospace;
+            color: #7c3aed;
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            min-width: 18px;
+        }
+
+        .lcd-divider {
+            height: 1px;
+            background: rgba(40,50,70,0.2);
+            margin-bottom: 6px;
+        }
+
+        .lcd-result {
+            text-align: right;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #22d3ee;
+            min-height: 32px;
+            transition: color 0.2s;
+        }
+        .lcd-result.error { color: #f87171; font-size: 0.85rem; font-weight: 500; }
+
+        /* ===== BUTTONS ===== */
+        .btn-pad {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 7px;
+        }
+
+        .cbtn {
+            height: 46px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.1s;
+            /* 3D button effect */
+            box-shadow:
+                0 3px 0 rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.06);
+        }
+
+        .cbtn:active {
+            transform: translateY(2px);
+            box-shadow:
+                0 1px 0 rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.06);
+        }
+
+        .cbtn-add {
+            background: linear-gradient(180deg, #1a3528, #14291f);
+            color: #4ade80;
+        }
+        .cbtn-add:hover { background: linear-gradient(180deg, #1f3f2f, #182f24); }
+
+        .cbtn-sub {
+            background: linear-gradient(180deg, #352a1a, #291f14);
+            color: #fbbf24;
+        }
+        .cbtn-sub:hover { background: linear-gradient(180deg, #3f321f, #2f2518); }
+
+        .cbtn-mul {
+            background: linear-gradient(180deg, #1a2535, #141f29);
+            color: #60a5fa;
+        }
+        .cbtn-mul:hover { background: linear-gradient(180deg, #1f2f3f, #18252f); }
+
+        .cbtn-div {
+            background: linear-gradient(180deg, #251a35, #1f1429);
+            color: #c084fc;
+        }
+        .cbtn-div:hover { background: linear-gradient(180deg, #2f1f3f, #25182f); }
+
+        .cbtn-clr {
+            grid-column: span 2;
+            height: 38px;
+            background: linear-gradient(180deg, #2a1520, #1f1018);
+            color: #f87171;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            margin-top: 2px;
+        }
+        .cbtn-clr:hover { background: linear-gradient(180deg, #351a25, #25131d); }
+
+        /* Symbol inside button */
+        .sym {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-right: 4px;
+        }
     </style>
 </head>
 <body>
-    <div class="glow-orb g1"></div>
-    <div class="glow-orb g2"></div>
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
 
     <a href="../index.html" class="back-link">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
         Назад
     </a>
 
-    <div class="calc">
-        <div class="calc-title">Калькулятор</div>
+    <div class="calc-shell">
+        <div class="brand">Synergy Calc</div>
+        <div class="solar"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 
-        <div class="inputs">
-            <div class="input-group">
-                <label>Число 1</label>
-                <input type="text" id="num1" placeholder="0" inputmode="decimal">
+        <div class="lcd">
+            <div class="lcd-row">
+                <input type="text" id="n1" placeholder="0" inputmode="decimal">
+                <span class="lcd-op" id="op"></span>
+                <input type="text" id="n2" placeholder="0" inputmode="decimal">
             </div>
-            <div class="input-group">
-                <label>Число 2</label>
-                <input type="text" id="num2" placeholder="0" inputmode="decimal">
-            </div>
+            <div class="lcd-divider"></div>
+            <div class="lcd-result" id="res">0</div>
         </div>
 
-        <div class="op-grid">
-            <button class="op-btn sum" onclick="calc('sum')"><span class="op-sym">+</span> Сумма</button>
-            <button class="op-btn diff" onclick="calc('diff')"><span class="op-sym">−</span> Разность</button>
-            <button class="op-btn mult" onclick="calc('mult')"><span class="op-sym">×</span> Произведение</button>
-            <button class="op-btn div" onclick="calc('div')"><span class="op-sym">÷</span> Деление</button>
+        <div class="btn-pad">
+            <button class="cbtn cbtn-add" onclick="go('add')"><span class="sym">+</span>Сумма</button>
+            <button class="cbtn cbtn-sub" onclick="go('sub')"><span class="sym">−</span>Разность</button>
+            <button class="cbtn cbtn-mul" onclick="go('mul')"><span class="sym">×</span>Произв.</button>
+            <button class="cbtn cbtn-div" onclick="go('div')"><span class="sym">÷</span>Деление</button>
+            <button class="cbtn cbtn-clr" onclick="clr()">C &nbsp; ОЧИСТИТЬ</button>
         </div>
-
-        <div class="result-area">
-            <div class="result-label">РЕЗУЛЬТАТ</div>
-            <div class="result-value" id="result">0</div>
-        </div>
-
-        <button class="clear-btn" onclick="clearAll()">ОЧИСТИТЬ</button>
     </div>
 
     <script>
-        function calc(op) {
-            const i1 = document.getElementById('num1').value;
-            const i2 = document.getElementById('num2').value;
-            const res = document.getElementById('result');
+    const ops = {add:'+', sub:'−', mul:'×', div:'÷'};
 
-            const n1 = parseFloat(i1);
-            const n2 = parseFloat(i2);
+    function go(o) {
+        const v1 = document.getElementById('n1').value;
+        const v2 = document.getElementById('n2').value;
+        const r = document.getElementById('res');
+        document.getElementById('op').textContent = ops[o] || '';
 
-            if (isNaN(n1) || isNaN(n2) || i1.trim() === '' || i2.trim() === '') {
-                res.textContent = 'Ошибка: введите числа!';
-                res.classList.add('error');
-                return;
-            }
-
-            res.classList.remove('error');
-            let r;
-            switch (op) {
-                case 'sum':  r = n1 + n2; break;
-                case 'diff': r = n1 - n2; break;
-                case 'mult': r = n1 * n2; break;
-                case 'div':
-                    if (n2 === 0) {
-                        res.textContent = 'Ошибка: деление на ноль!';
-                        res.classList.add('error');
-                        return;
-                    }
-                    r = n1 / n2;
-                    break;
-            }
-            r = Math.round(r * 1000000) / 1000000;
-            res.textContent = r;
+        const a = parseFloat(v1), b = parseFloat(v2);
+        if (isNaN(a) || isNaN(b) || !v1.trim() || !v2.trim()) {
+            r.textContent = 'Ошибка: введите числа!';
+            r.classList.add('error');
+            return;
         }
-
-        function clearAll() {
-            document.getElementById('num1').value = '';
-            document.getElementById('num2').value = '';
-            document.getElementById('result').textContent = '0';
-            document.getElementById('result').classList.remove('error');
+        r.classList.remove('error');
+        let x;
+        if (o==='add') x=a+b;
+        else if (o==='sub') x=a-b;
+        else if (o==='mul') x=a*b;
+        else {
+            if (b===0) { r.textContent='Деление на ноль!'; r.classList.add('error'); return; }
+            x=a/b;
         }
+        r.textContent = Math.round(x*1000000)/1000000;
+    }
+
+    function clr() {
+        document.getElementById('n1').value='';
+        document.getElementById('n2').value='';
+        document.getElementById('res').textContent='0';
+        document.getElementById('res').classList.remove('error');
+        document.getElementById('op').textContent='';
+    }
     </script>
 </body>
 </html>
