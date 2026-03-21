@@ -25,7 +25,10 @@
         /* === CANVAS STARS === */
         #starfield {
             position: fixed;
-            inset: 0;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
             z-index: 0;
             pointer-events: none;
         }
@@ -348,11 +351,19 @@
     let W, H;
 
     function resize() {
-        W = canvas.width = window.innerWidth;
-        H = canvas.height = window.innerHeight;
+        const dpr = window.devicePixelRatio || 1;
+        W = window.innerWidth;
+        H = window.innerHeight;
+        canvas.width = W * dpr;
+        canvas.height = H * dpr;
+        canvas.style.width = W + 'px';
+        canvas.style.height = H + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
     resize();
     window.addEventListener('resize', resize);
+    // Also handle zoom changes
+    window.visualViewport?.addEventListener('resize', resize);
 
     // Star layers: far (slow, dim, small) → near (fast, bright, large)
     const layers = [
