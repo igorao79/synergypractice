@@ -55,9 +55,9 @@
         }
 
         .counter-display.positive {
-            background: rgba(234, 179, 8, 0.15);
-            border: 1px solid rgba(234, 179, 8, 0.3);
-            box-shadow: 0 0 30px rgba(234, 179, 8, 0.1);
+            background: rgba(255, 255, 0, 0.15);
+            border: 1px solid rgba(255, 255, 0, 0.3);
+            box-shadow: 0 0 30px rgba(255, 255, 0, 0.1);
         }
         .counter-display.negative {
             background: rgba(34, 197, 94, 0.15);
@@ -85,7 +85,7 @@
         button {
             width: 72px; height: 72px;
             font-size: 2rem; font-weight: 700; color: #fff;
-            border: none; border-radius: 16px; cursor: pointer;
+            border: none; border-radius: 5px; cursor: pointer;
             transition: all 0.2s; font-family: 'Space Grotesk', sans-serif;
         }
         button:hover:not(:disabled) { transform: translateY(-2px); }
@@ -156,7 +156,7 @@
             btnMinus.disabled = count <= -10;
 
             if (count >= 10 || count <= -10) {
-                message.textContent = 'Вы достигли максимального значения!';
+                message.textContent = 'Вы достигли экстремального значения!';
                 message.classList.add('visible');
             } else {
                 message.textContent = '';
