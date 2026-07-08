@@ -219,11 +219,17 @@
             align-items: center;
             gap: 8px;
         }
-        .names-list li::before {
-            content: '';
-            width: 6px; height: 6px;
-            background: #7c3aed;
+        .names-list .user-num {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px; height: 22px;
+            background: rgba(124, 58, 237, 0.15);
+            border: 1px solid rgba(124, 58, 237, 0.25);
             border-radius: 50%;
+            color: #a78bfa;
+            font-size: 0.7rem;
+            font-weight: 700;
             flex-shrink: 0;
         }
 
@@ -292,7 +298,7 @@
             <h3>Последние пользователи</h3>
             <ul>
                 {% for user in names %}
-                <li>{{ user.name }}</li>
+                <li><span class="user-num">{{ user.id }}</span>{{ user.name }}</li>
                 {% endfor %}
             </ul>
         </div>
@@ -331,21 +337,33 @@
             { count: 40,  speedFactor: 0.1,  sizeRange: [1.5, 3.0], opacityRange: [0.5, 1.0] },
         ];
 
+        // Seeded RNG so the star field looks identical on every reload
+        // instead of visibly re-shuffling each time the form submits
+        function mulberry32(seed) {
+            return function () {
+                seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+                let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+                t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+                return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+            };
+        }
+        const rand = mulberry32(42);
+
         const stars = [];
         const colors = ['255,255,255', '200,180,255', '180,220,255', '255,200,240', '160,255,240'];
 
         layers.forEach(layer => {
             for (let i = 0; i < layer.count; i++) {
                 stars.push({
-                    x: Math.random() * W,
-                    y: Math.random() * H,
-                    size: layer.sizeRange[0] + Math.random() * (layer.sizeRange[1] - layer.sizeRange[0]),
+                    x: rand() * W,
+                    y: rand() * H,
+                    size: layer.sizeRange[0] + rand() * (layer.sizeRange[1] - layer.sizeRange[0]),
                     speed: layer.speedFactor,
-                    opacityBase: layer.opacityRange[0] + Math.random() * (layer.opacityRange[1] - layer.opacityRange[0]),
-                    twinkleSpeed: 0.5 + Math.random() * 2,
-                    twinkleOffset: Math.random() * Math.PI * 2,
-                    color: colors[Math.floor(Math.random() * colors.length)],
-                    hasGlow: Math.random() < 0.15,
+                    opacityBase: layer.opacityRange[0] + rand() * (layer.opacityRange[1] - layer.opacityRange[0]),
+                    twinkleSpeed: 0.5 + rand() * 2,
+                    twinkleOffset: rand() * Math.PI * 2,
+                    color: colors[Math.floor(rand() * colors.length)],
+                    hasGlow: rand() < 0.15,
                 });
             }
         });
