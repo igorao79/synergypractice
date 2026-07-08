@@ -241,10 +241,10 @@
             </div>
 
             <div class="op-grid">
-                <button class="op-btn" onclick="go('add')"><span class="op-sym">+</span>Сумма</button>
-                <button class="op-btn" onclick="go('sub')"><span class="op-sym">−</span>Разность</button>
-                <button class="op-btn" onclick="go('mul')"><span class="op-sym">×</span>Произведение</button>
-                <button class="op-btn" onclick="go('div')"><span class="op-sym">÷</span>Деление</button>
+                <button class="op-btn" onclick="sum()"><span class="op-sym">+</span>Сумма</button>
+                <button class="op-btn" onclick="difference()"><span class="op-sym">−</span>Разность</button>
+                <button class="op-btn" onclick="product()"><span class="op-sym">×</span>Произведение</button>
+                <button class="op-btn" onclick="quotient()"><span class="op-sym">÷</span>Деление</button>
             </div>
 
             <div class="result-box">
@@ -257,39 +257,57 @@
     </div>
 
     <script>
-    const ops = { add: '+', sub: '−', mul: '×', div: '÷' };
-
-    function go(o) {
+    // Читает оба инпута; возвращает [a, b] либо null, если введены не числа
+    function readOperands() {
         const v1 = document.getElementById('n1').value;
         const v2 = document.getElementById('n2').value;
-        const eq = document.getElementById('equation');
-        const r = document.getElementById('res');
-        const sym = ops[o];
-
         const a = parseFloat(v1), b = parseFloat(v2);
-        if (isNaN(a) || isNaN(b) || !v1.trim() || !v2.trim()) {
-            eq.textContent = '';
-            r.textContent = 'Ошибка: введите числа!';
-            r.classList.add('error');
-            return;
-        }
+        if (isNaN(a) || isNaN(b) || !v1.trim() || !v2.trim()) return null;
+        return [v1, v2, a, b];
+    }
 
-        if (o === 'div' && b === 0) {
-            eq.textContent = `${v1} ${sym} ${v2} =`;
-            r.textContent = 'Деление на ноль!';
-            r.classList.add('error');
-            return;
-        }
-
-        let x;
-        if (o === 'add') x = a + b;
-        else if (o === 'sub') x = a - b;
-        else if (o === 'mul') x = a * b;
-        else x = a / b;
-
-        eq.textContent = `${v1} ${sym} ${v2} =`;
+    function showResult(v1, v2, sym, value) {
+        document.getElementById('equation').textContent = `${v1} ${sym} ${v2} =`;
+        const r = document.getElementById('res');
         r.classList.remove('error');
-        r.textContent = Math.round(x * 1000000) / 1000000;
+        r.textContent = Math.round(value * 1000000) / 1000000;
+    }
+
+    function showError(message, equation) {
+        document.getElementById('equation').textContent = equation || '';
+        const r = document.getElementById('res');
+        r.classList.add('error');
+        r.textContent = message;
+    }
+
+    // 4 функции, соответствующие математическим действиям на кнопках
+    function sum() {
+        const operands = readOperands();
+        if (!operands) return showError('Ошибка: введите числа!');
+        const [v1, v2, a, b] = operands;
+        showResult(v1, v2, '+', a + b);
+    }
+
+    function difference() {
+        const operands = readOperands();
+        if (!operands) return showError('Ошибка: введите числа!');
+        const [v1, v2, a, b] = operands;
+        showResult(v1, v2, '−', a - b);
+    }
+
+    function product() {
+        const operands = readOperands();
+        if (!operands) return showError('Ошибка: введите числа!');
+        const [v1, v2, a, b] = operands;
+        showResult(v1, v2, '×', a * b);
+    }
+
+    function quotient() {
+        const operands = readOperands();
+        if (!operands) return showError('Ошибка: введите числа!');
+        const [v1, v2, a, b] = operands;
+        if (b === 0) return showError('Деление на ноль!', `${v1} ÷ ${v2} =`);
+        showResult(v1, v2, '÷', a / b);
     }
 
     function clr() {
