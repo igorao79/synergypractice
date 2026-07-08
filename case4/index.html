@@ -4,261 +4,297 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Кейс 4 — Калькулятор</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        ::selection { background: rgba(124, 58, 237, 0.5); }
 
         body {
             min-height: 100vh;
-            background: linear-gradient(135deg, #0a0e1a 0%, #171225 50%, #0a0e1a 100%);
+            background: #0a0e1a;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: 'Inter', sans-serif;
-            overflow: hidden;
+            position: relative;
+            overflow-x: hidden;
         }
 
-        .glow { position: fixed; border-radius: 50%; filter: blur(100px); pointer-events: none; }
-        .glow-1 { width: 400px; height: 400px; background: rgba(124,58,237,0.1); top: -100px; right: -100px; }
-        .glow-2 { width: 350px; height: 350px; background: rgba(6,182,212,0.07); bottom: -80px; left: -80px; }
+        .glow-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .glow-orb-1 {
+            width: 380px; height: 380px;
+            background: rgba(124, 58, 237, 0.15);
+            top: -100px; right: -100px;
+            animation: float 9s ease-in-out infinite;
+        }
+        .glow-orb-2 {
+            width: 300px; height: 300px;
+            background: rgba(6, 182, 212, 0.1);
+            bottom: -80px; left: -80px;
+            animation: float 11s ease-in-out infinite reverse;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
 
         .back-link {
             position: fixed; top: 20px; left: 20px; z-index: 10;
-            display: flex; align-items: center; gap: 6px;
-            color: #64748b; text-decoration: none; font-size: 0.85rem;
+            display: inline-flex; align-items: center; gap: 6px;
+            color: #94a3b8; text-decoration: none; font-size: 0.85rem;
             transition: color 0.3s;
         }
         .back-link:hover { color: #c084fc; }
 
-        /* ===== CALCULATOR SHELL ===== */
-        .calc-shell {
-            position: relative; z-index: 1;
-            width: 300px;
-            background: linear-gradient(170deg, #1e2340 0%, #171b30 40%, #111525 100%);
-            border-radius: 22px;
-            padding: 20px 18px 18px;
-            box-shadow:
-                0 25px 60px rgba(0,0,0,0.6),
-                0 0 0 1px rgba(255,255,255,0.03),
-                inset 0 1px 0 rgba(255,255,255,0.05);
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 420px;
+            max-width: 92vw;
         }
 
-        /* Brand */
-        .brand {
-            text-align: center;
-            font-size: 0.55rem;
-            font-weight: 600;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            color: #3b4060;
-            margin-bottom: 12px;
+        .card {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(51, 65, 85, 0.3);
+            border-radius: 20px;
+            padding: 36px;
         }
 
-        /* Solar strip */
-        .solar {
-            display: flex; gap: 2px; justify-content: center; margin-bottom: 14px;
-        }
-        .solar i {
-            display: block; width: 24px; height: 6px;
-            background: linear-gradient(180deg, #1a2035, #0f1525);
-            border-radius: 1px;
-            border: 1px solid rgba(30,35,55,0.8);
-        }
-
-        /* ===== LCD SCREEN ===== */
-        .lcd {
-            background: linear-gradient(135deg, #0b1018, #080d15);
-            border-radius: 10px;
-            border: 1px solid rgba(40,50,70,0.3);
-            padding: 12px 14px;
-            margin-bottom: 16px;
-            box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
-        }
-
-        .lcd-row {
-            display: flex; gap: 6px; margin-bottom: 8px;
-        }
-
-        .lcd input {
-            flex: 1; min-width: 0;
-            background: rgba(15,20,35,0.5);
-            border: 1px solid rgba(40,50,70,0.25);
-            border-radius: 6px;
-            padding: 8px 6px;
-            color: #c8d0e0;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.1rem;
-            text-align: right;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-        .lcd input:focus { border-color: rgba(124,58,237,0.4); }
-        .lcd input::placeholder { color: #2a3050; }
-
-        .lcd-op {
-            font-family: 'JetBrains Mono', monospace;
-            color: #7c3aed;
-            font-size: 1rem;
-            font-weight: 700;
-            display: flex; align-items: center; justify-content: center;
-            min-width: 18px;
-        }
-
-        .lcd-divider {
-            height: 1px;
-            background: rgba(40,50,70,0.2);
-            margin-bottom: 6px;
-        }
-
-        .lcd-result {
-            text-align: right;
-            font-family: 'JetBrains Mono', monospace;
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
             font-size: 1.6rem;
             font-weight: 700;
-            color: #22d3ee;
-            min-height: 32px;
-            transition: color 0.2s;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, #c084fc, #67e8f9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-        .lcd-result.error { color: #f87171; font-size: 0.85rem; font-weight: 500; }
 
-        /* ===== BUTTONS ===== */
-        .btn-pad {
+        .desc {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 28px;
+        }
+
+        .inputs-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+
+        .input-wrap {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .inputs-row input {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            text-align: right;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .inputs-row input:focus {
+            border-color: rgba(124, 58, 237, 0.5);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+        }
+        .inputs-row input::placeholder { color: #334155; }
+
+        .op-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 7px;
+            gap: 10px;
+            margin-bottom: 22px;
         }
 
-        .cbtn {
-            height: 46px;
+        .op-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 13px;
             border: none;
-            border-radius: 10px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.78rem;
+            border-radius: 12px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.9rem;
             font-weight: 600;
+            color: #fff;
+            background: linear-gradient(135deg, #7c3aed, #06b6d4);
             cursor: pointer;
-            position: relative;
-            transition: all 0.1s;
-            /* 3D button effect */
-            box-shadow:
-                0 3px 0 rgba(0,0,0,0.3),
-                inset 0 1px 0 rgba(255,255,255,0.06);
+            transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
         }
-
-        .cbtn:active {
-            transform: translateY(2px);
-            box-shadow:
-                0 1px 0 rgba(0,0,0,0.3),
-                inset 0 1px 0 rgba(255,255,255,0.06);
+        .op-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(124, 58, 237, 0.35);
         }
+        .op-btn:active { transform: translateY(0); filter: brightness(0.95); }
 
-        .cbtn-add {
-            background: linear-gradient(180deg, #1a3528, #14291f);
-            color: #4ade80;
-        }
-        .cbtn-add:hover { background: linear-gradient(180deg, #1f3f2f, #182f24); }
-
-        .cbtn-sub {
-            background: linear-gradient(180deg, #352a1a, #291f14);
-            color: #fbbf24;
-        }
-        .cbtn-sub:hover { background: linear-gradient(180deg, #3f321f, #2f2518); }
-
-        .cbtn-mul {
-            background: linear-gradient(180deg, #1a2535, #141f29);
-            color: #60a5fa;
-        }
-        .cbtn-mul:hover { background: linear-gradient(180deg, #1f2f3f, #18252f); }
-
-        .cbtn-div {
-            background: linear-gradient(180deg, #251a35, #1f1429);
-            color: #c084fc;
-        }
-        .cbtn-div:hover { background: linear-gradient(180deg, #2f1f3f, #25182f); }
-
-        .cbtn-clr {
-            grid-column: span 2;
-            height: 38px;
-            background: linear-gradient(180deg, #2a1520, #1f1018);
-            color: #f87171;
-            font-size: 0.7rem;
-            letter-spacing: 2px;
-            margin-top: 2px;
-        }
-        .cbtn-clr:hover { background: linear-gradient(180deg, #351a25, #25131d); }
-
-        /* Symbol inside button */
-        .sym {
-            font-size: 1.1rem;
+        .op-sym {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.05rem;
             font-weight: 700;
-            margin-right: 4px;
+            opacity: 0.85;
         }
+
+        .result-box {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(51, 65, 85, 0.3);
+            border-radius: 14px;
+            padding: 18px 20px;
+            margin-bottom: 20px;
+            min-height: 84px;
+        }
+
+        .equation {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: #64748b;
+            text-align: right;
+            min-height: 18px;
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
+        }
+
+        .result-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #22d3ee;
+            text-align: right;
+            text-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
+            transition: color 0.25s, text-shadow 0.25s, font-size 0.25s;
+            word-break: break-word;
+        }
+        .result-value.error {
+            color: #f87171;
+            font-size: 1rem;
+            text-shadow: 0 0 16px rgba(248, 113, 113, 0.25);
+        }
+
+        .clear-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: transparent;
+            border: 1px solid rgba(51, 65, 85, 0.4);
+            border-radius: 10px;
+            color: #64748b;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .clear-btn:hover { color: #f87171; border-color: rgba(248, 113, 113, 0.35); }
     </style>
 </head>
 <body>
-    <div class="glow glow-1"></div>
-    <div class="glow glow-2"></div>
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
 
     <a href="../index.html" class="back-link">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
         Назад
     </a>
 
-    <div class="calc-shell">
-        <div class="brand">Synergy Calc</div>
-        <div class="solar"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="container">
+        <div class="card">
+            <h1>Калькулятор</h1>
+            <p class="desc">Введите два числа и выберите операцию</p>
 
-        <div class="lcd">
-            <div class="lcd-row">
-                <input type="text" id="n1" placeholder="0" inputmode="decimal">
-                <span class="lcd-op" id="op"></span>
-                <input type="text" id="n2" placeholder="0" inputmode="decimal">
+            <div class="inputs-row">
+                <div class="input-wrap">
+                    <label>Число 1</label>
+                    <input type="text" id="n1" placeholder="0" inputmode="decimal">
+                </div>
+                <div class="input-wrap">
+                    <label>Число 2</label>
+                    <input type="text" id="n2" placeholder="0" inputmode="decimal">
+                </div>
             </div>
-            <div class="lcd-divider"></div>
-            <div class="lcd-result" id="res">0</div>
-        </div>
 
-        <div class="btn-pad">
-            <button class="cbtn cbtn-add" onclick="go('add')"><span class="sym">+</span>Сумма</button>
-            <button class="cbtn cbtn-sub" onclick="go('sub')"><span class="sym">−</span>Разность</button>
-            <button class="cbtn cbtn-mul" onclick="go('mul')"><span class="sym">×</span>Произведение</button>
-            <button class="cbtn cbtn-div" onclick="go('div')"><span class="sym">÷</span>Деление</button>
-            <button class="cbtn cbtn-clr" onclick="clr()">C &nbsp; ОЧИСТИТЬ</button>
+            <div class="op-grid">
+                <button class="op-btn" onclick="go('add')"><span class="op-sym">+</span>Сумма</button>
+                <button class="op-btn" onclick="go('sub')"><span class="op-sym">−</span>Разность</button>
+                <button class="op-btn" onclick="go('mul')"><span class="op-sym">×</span>Произведение</button>
+                <button class="op-btn" onclick="go('div')"><span class="op-sym">÷</span>Деление</button>
+            </div>
+
+            <div class="result-box">
+                <div class="equation" id="equation"></div>
+                <div class="result-value" id="res">0</div>
+            </div>
+
+            <button class="clear-btn" onclick="clr()">ОЧИСТИТЬ</button>
         </div>
     </div>
 
     <script>
-    const ops = {add:'+', sub:'−', mul:'×', div:'÷'};
+    const ops = { add: '+', sub: '−', mul: '×', div: '÷' };
 
     function go(o) {
         const v1 = document.getElementById('n1').value;
         const v2 = document.getElementById('n2').value;
+        const eq = document.getElementById('equation');
         const r = document.getElementById('res');
-        document.getElementById('op').textContent = ops[o] || '';
+        const sym = ops[o];
 
         const a = parseFloat(v1), b = parseFloat(v2);
         if (isNaN(a) || isNaN(b) || !v1.trim() || !v2.trim()) {
+            eq.textContent = '';
             r.textContent = 'Ошибка: введите числа!';
             r.classList.add('error');
             return;
         }
-        r.classList.remove('error');
-        let x;
-        if (o==='add') x=a+b;
-        else if (o==='sub') x=a-b;
-        else if (o==='mul') x=a*b;
-        else {
-            if (b===0) { r.textContent='Деление на ноль!'; r.classList.add('error'); return; }
-            x=a/b;
+
+        if (o === 'div' && b === 0) {
+            eq.textContent = `${v1} ${sym} ${v2} =`;
+            r.textContent = 'Деление на ноль!';
+            r.classList.add('error');
+            return;
         }
-        r.textContent = Math.round(x*1000000)/1000000;
+
+        let x;
+        if (o === 'add') x = a + b;
+        else if (o === 'sub') x = a - b;
+        else if (o === 'mul') x = a * b;
+        else x = a / b;
+
+        eq.textContent = `${v1} ${sym} ${v2} =`;
+        r.classList.remove('error');
+        r.textContent = Math.round(x * 1000000) / 1000000;
     }
 
     function clr() {
-        document.getElementById('n1').value='';
-        document.getElementById('n2').value='';
-        document.getElementById('res').textContent='0';
+        document.getElementById('n1').value = '';
+        document.getElementById('n2').value = '';
+        document.getElementById('equation').textContent = '';
+        document.getElementById('res').textContent = '0';
         document.getElementById('res').classList.remove('error');
-        document.getElementById('op').textContent='';
     }
     </script>
 </body>

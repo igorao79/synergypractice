@@ -20,70 +20,48 @@
             position: relative;
         }
 
-        /* Stars background */
-        .stars {
+        /* === CANVAS STARS (copied 1:1 from main page) === */
+        #starfield {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
             z-index: 0;
-        }
-        .star {
-            position: absolute;
-            border-radius: 50%;
-            background: #fff;
-            animation: twinkle var(--duration) ease-in-out infinite alternate;
-        }
-        @keyframes twinkle {
-            0% { opacity: 0.2; transform: scale(0.8); }
-            100% { opacity: 1; transform: scale(1.2); }
+            pointer-events: none;
         }
 
-        /* Glow orbs (nebula style, matches main page) */
-        .orb {
+        /* === NEBULA GLOW (copied 1:1 from main page) === */
+        .nebula {
             position: fixed;
             border-radius: 50%;
-            filter: blur(90px);
-            opacity: 0.6;
+            filter: blur(100px);
+            pointer-events: none;
             z-index: 0;
+            opacity: 0.6;
+        }
+        .nebula-1 {
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(124,58,237,0.25), transparent 70%);
+            top: -150px; right: -100px;
             animation: nebula-drift 20s ease-in-out infinite;
         }
-        .orb-1 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(124,58,237,0.25), transparent 70%); top: -100px; left: -100px; }
-        .orb-2 { width: 300px; height: 300px; background: radial-gradient(circle, rgba(6,182,212,0.15), transparent 70%); bottom: -80px; right: -80px; animation-direction: reverse; }
-        .orb-3 { width: 250px; height: 250px; background: radial-gradient(circle, rgba(168,85,247,0.15), transparent 70%); top: 50%; left: 60%; animation-delay: 5s; }
+        .nebula-2 {
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(6,182,212,0.15), transparent 70%);
+            bottom: -100px; left: -80px;
+            animation: nebula-drift 25s ease-in-out infinite reverse;
+        }
+        .nebula-3 {
+            width: 350px; height: 350px;
+            background: radial-gradient(circle, rgba(236,72,153,0.1), transparent 70%);
+            top: 40%; left: 60%;
+            animation: nebula-drift 18s ease-in-out infinite 5s;
+        }
         @keyframes nebula-drift {
             0%, 100% { transform: translate(0, 0) scale(1); }
             33% { transform: translate(30px, -20px) scale(1.1); }
             66% { transform: translate(-20px, 15px) scale(0.95); }
-        }
-
-        /* Comets */
-        .comet {
-            position: fixed;
-            width: 2px;
-            height: 2px;
-            background: #fff;
-            border-radius: 50%;
-            z-index: 0;
-            opacity: 0;
-        }
-        .comet::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0;
-            width: 80px; height: 1px;
-            background: linear-gradient(to left, rgba(255,255,255,0.6), transparent);
-            transform-origin: right center;
-            transform: rotate(225deg);
-        }
-        .comet-1 { animation: cometFly 6s ease-in-out infinite; animation-delay: 0s; top: 15%; left: -5%; }
-        .comet-2 { animation: cometFly 8s ease-in-out infinite; animation-delay: 3s; top: 40%; left: -5%; }
-        .comet-3 { animation: cometFly 7s ease-in-out infinite; animation-delay: 5s; top: 70%; left: -5%; }
-        @keyframes cometFly {
-            0% { transform: translate(0, 0); opacity: 0; }
-            10% { opacity: 1; }
-            80% { opacity: 1; }
-            100% { transform: translate(110vw, 30vh); opacity: 0; }
         }
 
         /* Back button */
@@ -263,13 +241,10 @@
 </head>
 <body>
     <!-- Background -->
-    <div class="stars" id="stars"></div>
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-    <div class="comet comet-1"></div>
-    <div class="comet comet-2"></div>
-    <div class="comet comet-3"></div>
+    <canvas id="starfield"></canvas>
+    <div class="nebula nebula-1"></div>
+    <div class="nebula nebula-2"></div>
+    <div class="nebula nebula-3"></div>
 
     <!-- Back button -->
     <a href="https://igorao79.github.io/synergypractice/index.html" class="back-btn">
@@ -321,20 +296,119 @@
     </div>
 
     <script>
-        // Generate stars
-        const starsEl = document.getElementById('stars');
-        for (let i = 0; i < 120; i++) {
-            const star = document.createElement('div');
-            star.className = 'star';
-            const size = Math.random() * 2.5 + 0.5;
-            star.style.width = size + 'px';
-            star.style.height = size + 'px';
-            star.style.left = Math.random() * 100 + '%';
-            star.style.top = Math.random() * 100 + '%';
-            star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
-            star.style.animationDelay = Math.random() * 4 + 's';
-            starsEl.appendChild(star);
+        // === CANVAS STARFIELD (copied 1:1 from main page) ===
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+        let W, H;
+
+        function resize() {
+            const dpr = window.devicePixelRatio || 1;
+            W = window.innerWidth;
+            H = window.innerHeight;
+            canvas.width = W * dpr;
+            canvas.height = H * dpr;
+            canvas.style.width = W + 'px';
+            canvas.style.height = H + 'px';
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         }
+        resize();
+        window.addEventListener('resize', resize);
+        window.visualViewport?.addEventListener('resize', resize);
+
+        const layers = [
+            { count: 200, speedFactor: 0.02, sizeRange: [0.3, 1.0], opacityRange: [0.15, 0.4] },
+            { count: 100, speedFactor: 0.05, sizeRange: [0.8, 1.8], opacityRange: [0.3, 0.7] },
+            { count: 40,  speedFactor: 0.1,  sizeRange: [1.5, 3.0], opacityRange: [0.5, 1.0] },
+        ];
+
+        const stars = [];
+        const colors = ['255,255,255', '200,180,255', '180,220,255', '255,200,240', '160,255,240'];
+
+        layers.forEach(layer => {
+            for (let i = 0; i < layer.count; i++) {
+                stars.push({
+                    x: Math.random() * W,
+                    y: Math.random() * H,
+                    size: layer.sizeRange[0] + Math.random() * (layer.sizeRange[1] - layer.sizeRange[0]),
+                    speed: layer.speedFactor,
+                    opacityBase: layer.opacityRange[0] + Math.random() * (layer.opacityRange[1] - layer.opacityRange[0]),
+                    twinkleSpeed: 0.5 + Math.random() * 2,
+                    twinkleOffset: Math.random() * Math.PI * 2,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    hasGlow: Math.random() < 0.15,
+                });
+            }
+        });
+
+        const shootingStars = [];
+        function spawnShootingStar() {
+            shootingStars.push({
+                x: Math.random() * W,
+                y: Math.random() * H * 0.4,
+                vx: 4 + Math.random() * 6,
+                vy: 2 + Math.random() * 3,
+                life: 1,
+                decay: 0.012 + Math.random() * 0.008,
+                length: 40 + Math.random() * 60,
+            });
+        }
+
+        let time = 0;
+        function animate() {
+            time += 0.016;
+            ctx.clearRect(0, 0, W, H);
+
+            for (const s of stars) {
+                const twinkle = Math.sin(time * s.twinkleSpeed + s.twinkleOffset) * 0.5 + 0.5;
+                const opacity = s.opacityBase * (0.5 + twinkle * 0.5);
+
+                if (s.hasGlow) {
+                    ctx.beginPath();
+                    const grd = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.size * 4);
+                    grd.addColorStop(0, `rgba(${s.color}, ${opacity * 0.3})`);
+                    grd.addColorStop(1, 'transparent');
+                    ctx.fillStyle = grd;
+                    ctx.arc(s.x, s.y, s.size * 4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                ctx.beginPath();
+                ctx.fillStyle = `rgba(${s.color}, ${opacity})`;
+                ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                s.y += s.speed;
+                if (s.y > H + 5) { s.y = -5; s.x = Math.random() * W; }
+            }
+
+            for (let i = shootingStars.length - 1; i >= 0; i--) {
+                const ss = shootingStars[i];
+                ctx.beginPath();
+                const grd = ctx.createLinearGradient(ss.x, ss.y, ss.x - ss.vx * ss.length * 0.15, ss.y - ss.vy * ss.length * 0.15);
+                grd.addColorStop(0, `rgba(200, 180, 255, ${ss.life})`);
+                grd.addColorStop(1, 'transparent');
+                ctx.strokeStyle = grd;
+                ctx.lineWidth = 1.5;
+                ctx.moveTo(ss.x, ss.y);
+                ctx.lineTo(ss.x - ss.vx * ss.length * 0.15, ss.y - ss.vy * ss.length * 0.15);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.fillStyle = `rgba(255, 255, 255, ${ss.life})`;
+                ctx.arc(ss.x, ss.y, 1.5, 0, Math.PI * 2);
+                ctx.fill();
+
+                ss.x += ss.vx;
+                ss.y += ss.vy;
+                ss.life -= ss.decay;
+                if (ss.life <= 0) shootingStars.splice(i, 1);
+            }
+
+            if (Math.random() < 0.015) spawnShootingStar();
+
+            requestAnimationFrame(animate);
+        }
+        animate();
 
         // Add error class to input if errors exist
         {% if form.name.errors %}
