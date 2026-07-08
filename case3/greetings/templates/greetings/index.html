@@ -16,8 +16,10 @@
             background: #0a0e1a;
             font-family: 'Inter', sans-serif;
             color: #e2e8f0;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
             position: relative;
+            padding: 30px 0;
         }
 
         /* === CANVAS STARS (copied 1:1 from main page) === */
@@ -196,7 +198,15 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        .names-list ul { list-style: none; padding: 0; }
+        .names-list ul {
+            list-style: none;
+            padding: 0 4px 0 0;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+        .names-list ul::-webkit-scrollbar { width: 6px; }
+        .names-list ul::-webkit-scrollbar-track { background: transparent; }
+        .names-list ul::-webkit-scrollbar-thumb { background: rgba(124, 58, 237, 0.35); border-radius: 3px; }
         .names-list li {
             padding: 10px 14px;
             background: rgba(30, 35, 60, 0.6);
